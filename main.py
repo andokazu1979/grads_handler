@@ -78,7 +78,7 @@ for lst in ListStream.get_comb(lst_exec_cond):
     dt_end = datetime.datetime.strptime(calc['dt_end'], '%Y%m%d%H')
     delta_in_hour = calc['delta_in_hour']
     dt = dt_sta
-    while dt < dt_end:
+    while dt <= dt_end:
         logger.info(dt)
         script_maker.output(indir, outdir, string='[{0}]'.format(stringitem), tstr=dt.strftime('%HZ%d%b%Y'))
         execute_cmd(['grads', '-blc', 'mk_figure.gs'])
