@@ -1,0 +1,52 @@
+[global]
+calc_pattern = 'SampleRun'
+
+loglevel = 'DEBUG'
+#loglevel = 'INFO'
+#loglevel = 'WARNING'
+#loglevel = 'ERROR'
+#loglevel = 'CRITCAL'
+
+[SampleRun]
+dt_sta = '2018081600'
+dt_end = '2018081606'
+delta_in_hour = 6
+
+[SampleRun.exec_cond]
+lst_runs = ['run1', 'run2']
+
+[SampleRun.figure_cond]
+dirpath_in = './'
+dirpath_out = './'
+xmin = 124.0
+xmax = 146.5
+ymin = 26.3
+ymax = 43.2
+font_x_color = 1
+font_x_thickness = 4
+font_x_size = 0.15
+font_y_color = 1
+font_y_thickness = 4
+font_y_size = 0.15
+parea_xmin = 1
+parea_xmax = 9
+parea_ymin = 1
+parea_ymax = 7.5
+xlint = 2
+ylint = 2
+coord = 'latlon'
+land_clevs = 0.5
+land_cthick = 10
+land_ccolor = 1
+string = ['10.0', '1.0']
+lev = 850
+
+title = 'Sample_figure'
+header = 'sample_val'
+stringitem = 'Unit'
+
+[[SampleRun.figure_cond.var]]
+fname = 'sample.ctl'
+vname = 'sample_val'
+type = 'shaded'
+clevs = [-50.0, -40.0, -30.0, -20.0, -10.0, 0.0, 10.0, 20.0, 30.0, 40.0, 50.0]
