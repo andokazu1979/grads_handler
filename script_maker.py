@@ -203,6 +203,12 @@ class ScriptMakerGrADS(object):
             elif 'cint' in var:
                 self.str_draw_variables += "'set cint {0}'\n".format(var['cint'])
 
+            if 'clab' in var:
+                self.str_draw_variables += "'set clab {0}'\n".format(var['clab'])
+
+            if 'clskip' in var:
+                self.str_draw_variables += "'set clskip {0}'\n".format(var['clskip'])
+
             if 'rgb' in var:
                 self.str_draw_variables += """
 'set rgb {0}'
