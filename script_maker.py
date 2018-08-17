@@ -145,14 +145,6 @@ class ScriptMakerGrADS(object):
             # self.str_open_files += "'open 'fpath_land\n"
         self.str_open_files += "\n"
 
-        if 'lev' in self.figure_cond:
-            self.str_setting_after_open = """
-* Set level of z-direction
-'set lev {0}'
-
-
-"""[1:].format(self.figure_cond['lev'])
-
     def set_str_setting_after_open(self):
         if self.tstr is None:
             self.str_setting_after_open = """
@@ -174,6 +166,14 @@ class ScriptMakerGrADS(object):
 'set time 'tstr
 
 """[1:]
+
+        if 'lev' in self.figure_cond:
+            self.str_setting_after_open += """
+* Set level of z-direction
+'set lev {0}'
+
+
+"""[1:].format(self.figure_cond['lev'])
 
     def set_str_draw_variables(self):
         self.str_draw_variables += """
