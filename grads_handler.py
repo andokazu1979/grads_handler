@@ -50,23 +50,26 @@ calc = conf[calc_pattern]
 exec_cond = calc['exec_cond']
 figure_cond = calc['figure_cond']
 
-script_maker = ScriptMakerGrADS(calc, './mk_figure.gs')
-
 dirpath_in = figure_cond['dirpath_in']
 dirpath_out = figure_cond['dirpath_out']
 header = figure_cond['header']
-lev = figure_cond['lev']
-stringitem = figure_cond['stringitem']
 
 lst_exec_cond = exec_cond.values()
 
 for lst in ListStream.get_comb(lst_exec_cond):
     logger.info(lst)
 
+    lev = lst[-2].replace('hPa', '')
+    varname = lst[-1]
+
+    script_maker = ScriptMakerGrADS(calc, './mk_figure.gs', lev, varname)
+    stringitem = figure_cond[lev][varname][0]['stringitem']
+
     indir = '{0}/'.format(dirpath_in)
     outdir = '{0}/'.format(dirpath_out)
-    for item in lst:
+    for item in lst[:-2]:
         indir += '{0}/'.format(item)
+    for item in lst:
         outdir += '{0}/'.format(item)
 
     logger.debug('indir = {0}'.format(indir))

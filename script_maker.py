@@ -3,7 +3,7 @@
 class ScriptMakerGrADS(object):
     """ScriptMakerGrADS"""
 
-    def __init__(self, calc, filepath):
+    def __init__(self, calc, filepath, lev=None, varname=None):
         """__init__ """
         self.str_parameters = ""
         self.str_global_settings = ""
@@ -23,6 +23,26 @@ class ScriptMakerGrADS(object):
         self.filepath = filepath
         self.cbar_drawed = False
 
+        if lev is None:
+            self.lev = figure_cond['lev']
+        else:
+            self.lev = lev
+
+        if varname is None:
+            self.lst_var = figure_cond['var']
+        else:
+            self.lst_var = figure_cond[lev][varname]
+
+        if varname is None:
+            self.title = figure_cond['title']
+        else:
+            self.title = figure_cond[lev][varname][0]['title']
+
+        if varname is None:
+            self.header = figure_cond['header']
+        else:
+            self.header = figure_cond[lev][varname][0]['header']
+
     def set_str_parameters(self):
         self.str_parameters += """
 ****************************************
@@ -31,7 +51,7 @@ class ScriptMakerGrADS(object):
 
 """[1:]
 
-        for index, var in enumerate(self.figure_cond['var']):
+        for index, var in enumerate(self.lst_var):
             if 'dirpath' in var:
                 path = var['dirpath']
             else:
@@ -53,8 +73,8 @@ class ScriptMakerGrADS(object):
                         var['fname_mask'],
                         )
                 self.str_parameters += "name_var_mask{0}='{1}'\n".format(index + 1, var['vname_mask'])
-        self.str_parameters += "title='{0}'\n".format(self.figure_cond['title'])
-        self.str_parameters += "header='{0}'\n".format(self.figure_cond['header'])
+        self.str_parameters += "title='{0}'\n".format(self.title)
+        self.str_parameters += "header='{0}'\n".format(self.header)
         # if(self.figure_cond['coord'] == 'xy'):
             # self.str_parameters += "fpath_land='{0}'\n".format(self.figure_cond['filepath_topo'])
         self.str_parameters += "xmin='{0}'\n".format(self.figure_cond['xmin'])
@@ -137,7 +157,7 @@ class ScriptMakerGrADS(object):
 
 """[1:]#.format()
 
-        for index, var in enumerate(self.figure_cond['var']):
+        for index, var in enumerate(self.lst_var):
             self.str_open_files += "'open 'fpath_var{0}\n".format(index + 1)
             if 'fname_mask' in var:
                 self.str_open_files += "'open 'fpath_var_mask{0}\n".format(index + 1)
@@ -167,13 +187,13 @@ class ScriptMakerGrADS(object):
 
 """[1:]
 
-        if 'lev' in self.figure_cond:
+        if self.lev is not None:
             self.str_setting_after_open += """
 * Set level of z-direction
 'set lev {0}'
 
 
-"""[1:].format(self.figure_cond['lev'])
+"""[1:].format(self.lev)
 
     def set_str_draw_variables(self):
         self.str_draw_variables += """
@@ -186,7 +206,7 @@ class ScriptMakerGrADS(object):
         flag = False
         index_var = -1
         index_file = 0
-        for var in self.figure_cond['var']:
+        for var in self.lst_var:
             index_var += 1
             index_file += 1
             if flag:
@@ -237,11 +257,23 @@ class ScriptMakerGrADS(object):
             if 'cmin' in var:
                 self.str_draw_variables += "'set cmin {0}'\n".format(var['cmin'])
 
+            if 'arrscl' in var:
+                self.str_draw_variables += "'set arrscl {0} {1}'\n".format(var['arrscl'][0], var['arrscl'][1])
+
             if 'vector' == var['type']:
                 if 'use_second_time' in var:
                     self.str_draw_variables += "'d skip('name_var{0}'.{0}(t='t__'),10,10);'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2)
                 else:
-                    self.str_draw_variables += "'d skip('name_var{0}'.{0},10,10);'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2)
+                    if 'diff' in var:
+                        self.str_draw_variables += "'d skip('name_var{0}'.{2} - 'name_var_mask{0}'.{3},10,10);'name_var{1}'.{4} - 'name_var_mask{1}'.{5}'\n".format(index_var + 1, index_var + 2, index_file,  index_file + 1, index_file + 2, index_file + 3)
+                        self.str_draw_variables += "\n"
+                        break
+                    elif 'lterp' in var:
+                        self.str_draw_variables += "'d skip(lterp('name_var{0}'.{2}, 'name_var_mask{0}'.{3}) - 'name_var_mask{0}'.{3},10,10);lterp('name_var{1}'.{4}, 'name_var_mask{1}'.{5}) - 'name_var_mask{1}'.{5}'\n".format(index_var + 1, index_var + 2, index_file,  index_file + 1, index_file + 2, index_file + 3)
+                        self.str_draw_variables += "\n"
+                        break
+                    else:
+                        self.str_draw_variables += "'d skip('name_var{0}'.{0},10,10);'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2)
                 flag = True
             else:
                 if 'use_second_time' in var:
@@ -290,7 +322,7 @@ class ScriptMakerGrADS(object):
         # self.figure_cond['land_clevs'],
         # self.figure_cond['land_cthick'],
         # self.figure_cond['land_ccolor'],
-        # len(self.figure_cond['var']) + 1,
+        # len(self.lst_var) + 1,
         # )
         pass
 
@@ -343,7 +375,7 @@ time_ = subwrd(var,3)
 
 """[1:].format(
         self.opath,
-        self.figure_cond['header'],
+        self.header,
         )
 
     def set_str_finalize(self):
@@ -354,12 +386,12 @@ time_ = subwrd(var,3)
 """[1:]
 
         # if(self.figure_cond['coord'] == 'xy'):
-            # self.str_finalize += "'close {0}'\n".format(len(self.figure_cond['var']) + 1)
+            # self.str_finalize += "'close {0}'\n".format(len(self.lst_var) + 1)
         num = 0
-        for index, var in enumerate(self.figure_cond['var']):
+        for index, var in enumerate(self.lst_var):
             if 'fname_mask' in var:
                 num += 1
-        for index in range(len(self.figure_cond['var']) + num, 0, -1):
+        for index in range(len(self.lst_var) + num, 0, -1):
             self.str_finalize += "'close {0}'\n".format(index)
         self.str_finalize += "\n"
 
