@@ -31,17 +31,26 @@ class ScriptMakerGrADS(object):
         if varname is None:
             self.lst_var = figure_cond['var']
         else:
-            self.lst_var = figure_cond[lev][varname]
+            if lev == '0':
+                self.lst_var = figure_cond[varname]
+            else:
+                self.lst_var = figure_cond[lev][varname]
 
         if varname is None:
             self.title = figure_cond['title']
         else:
-            self.title = figure_cond[lev][varname][0]['title']
+            if lev == '0':
+                self.title = figure_cond[varname][0]['title']
+            else:
+                self.title = figure_cond[lev][varname][0]['title']
 
         if varname is None:
             self.header = figure_cond['header']
         else:
-            self.header = figure_cond[lev][varname][0]['header']
+            if lev == '0':
+                self.header = figure_cond[varname][0]['header']
+            else:
+                self.header = figure_cond[lev][varname][0]['header']
 
     def set_str_parameters(self):
         self.str_parameters += """
