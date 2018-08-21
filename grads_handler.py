@@ -59,8 +59,8 @@ lst_exec_cond = exec_cond.values()
 for lst in ListStream.get_comb(lst_exec_cond):
     logger.info(lst)
 
-    lev = lst[-2].replace('hPa', '')
-    varname = lst[-1]
+    lev = lst[-1].replace('hPa', '')
+    varname = lst[-2]
 
     script_maker = ScriptMakerGrADS(calc, './mk_figure.gs', lev, varname)
     stringitem = figure_cond[lev][varname][0]['stringitem']
