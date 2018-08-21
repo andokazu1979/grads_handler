@@ -254,6 +254,11 @@ class ScriptMakerGrADS(object):
             else:
                 factor = 1
 
+            if 'skip_interval' in var:
+                skip_interval = var['skip_interval']
+            else:
+                skip_interval = 1
+
             if 'cmin' in var:
                 self.str_draw_variables += "'set cmin {0}'\n".format(var['cmin'])
 
@@ -262,18 +267,18 @@ class ScriptMakerGrADS(object):
 
             if 'vector' == var['type']:
                 if 'use_second_time' in var:
-                    self.str_draw_variables += "'d skip('name_var{0}'.{0}(t='t__'),10,10);'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2)
+                    self.str_draw_variables += "'d skip('name_var{0}'.{0}(t='t__'),{2},{2});'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2, skip_interval)
                 else:
                     if 'diff' in var:
-                        self.str_draw_variables += "'d skip('name_var{0}'.{2} - 'name_var_mask{0}'.{3},10,10);'name_var{1}'.{4} - 'name_var_mask{1}'.{5}'\n".format(index_var + 1, index_var + 2, index_file,  index_file + 1, index_file + 2, index_file + 3)
+                        self.str_draw_variables += "'d skip('name_var{0}'.{2} - 'name_var_mask{0}'.{3},{6},{6});'name_var{1}'.{4} - 'name_var_mask{1}'.{5}'\n".format(index_var + 1, index_var + 2, index_file,  index_file + 1, index_file + 2, index_file + 3, skip_interval)
                         self.str_draw_variables += "\n"
                         break
                     elif 'lterp' in var:
-                        self.str_draw_variables += "'d skip(lterp('name_var{0}'.{2}, 'name_var_mask{0}'.{3}) - 'name_var_mask{0}'.{3},10,10);lterp('name_var{1}'.{4}, 'name_var_mask{1}'.{5}) - 'name_var_mask{1}'.{5}'\n".format(index_var + 1, index_var + 2, index_file,  index_file + 1, index_file + 2, index_file + 3)
+                        self.str_draw_variables += "'d skip(lterp('name_var{0}'.{2}, 'name_var_mask{0}'.{3}) - 'name_var_mask{0}'.{3},{6},{6});lterp('name_var{1}'.{4}, 'name_var_mask{1}'.{5}) - 'name_var_mask{1}'.{5}'\n".format(index_var + 1, index_var + 2, index_file,  index_file + 1, index_file + 2, index_file + 3, skip_interval)
                         self.str_draw_variables += "\n"
                         break
                     else:
-                        self.str_draw_variables += "'d skip('name_var{0}'.{0},10,10);'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2)
+                        self.str_draw_variables += "'d skip('name_var{0}'.{0},{2},{2});'name_var{1}'.{1}'\n".format(index_var + 1, index_var + 2, skip_interval)
                 flag = True
             else:
                 if 'use_second_time' in var:
