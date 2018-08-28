@@ -101,10 +101,14 @@ for lst1 in ListStream.get_comb(exec_cond.values()):
     model = lst1[0]
 
     dim = '1d'
-    exec_cond_model = calc['exec_cond_{0}_{1}'.format(model, dim)]
-    loop_for_model(lst1, exec_cond_model.values(), dim)
+    table_name = 'exec_cond_{0}_{1}'.format(model, dim)
+    if table_name in calc:
+        exec_cond_model = calc[table_name]
+        loop_for_model(lst1, exec_cond_model.values(), dim)
 
     dim = '2d'
-    exec_cond_model = calc['exec_cond_{0}_{1}'.format(model, dim)]
-    loop_for_model(lst1, exec_cond_model.values(), dim)
+    table_name = 'exec_cond_{0}_{1}'.format(model, dim)
+    if table_name in calc:
+        exec_cond_model = calc[table_name]
+        loop_for_model(lst1, exec_cond_model.values(), dim)
 
